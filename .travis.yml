@@ -8,6 +8,7 @@ services:
   - docker
 before_install:
   - sudo apt-get -qq update
+  - cat /etc/docker/daemon.json
 install:
   - pip install molecule[docker] ansible-lint flake8 testinfra
   # - pip install docker-py
