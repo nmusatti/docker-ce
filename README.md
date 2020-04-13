@@ -1,8 +1,6 @@
 Ansible role: docker-ce
 =======================
 
-[![Build Status](https://travis-ci.org/nmusatti/docker-ce.svg?branch=master)](https://travis-ci.org/nmusatti/docker-ce)
-
 An Ansible role to install the official Docker Community Edition. Currently only Red Hat distributions are supported,
 i.e. CentOS 7, CentOS 8 and Fedora. Note that, as there is no official CentOS 8 version, release `3:18.09.1-3` of the CentOS 7 version is installed for CentOS 8 as this is the only release for which a clean installation is possible at
 this time.
