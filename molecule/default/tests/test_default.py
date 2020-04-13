@@ -40,9 +40,6 @@ def test_docker_compose(host):
 
     res = host.run("echo '{}' > /tmp/docker-compose.yml".format(_compose))
     assert res.rc == 0
-    # for l in _compose.splitlines(True):
-    #     res = host.run("echo '{}' >> /tmp/docker-compose.yml".format(l))
-    #     assert res.rc == 0
 
     res1 = host.run(
         '/usr/local/bin/docker-compose -f /tmp/docker-compose.yml up')
