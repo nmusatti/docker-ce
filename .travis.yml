@@ -8,7 +8,8 @@ services:
   - docker
 before_install:
   - sudo apt-get -qq update
-  - sudo cat /etc/docker/daemon.json
+  - echo '{ \"storage-driver\": \"overlay2\" }' > /etc/docker/daemon.json
+  - sudo systemctl restart docker
 install:
   - pip install molecule[docker] ansible-lint flake8 testinfra
   # - pip install docker-py
