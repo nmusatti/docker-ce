@@ -112,6 +112,7 @@
   file:
     path: /etc/systemd/system/containerd.service.d
     state: directory
+    mode: 0755
   become: true
   when: dockerce_platform == 'CentOS8' and not containerd_path.stat.exists and modprobe_overlay is failed
 
@@ -121,6 +122,7 @@
       [Service]
       ExecStartPre=
     dest: /etc/systemd/system/containerd.service.d/override.conf
+    mode: 0644
   become: true
   when: dockerce_platform == 'CentOS8' and not containerd_path.stat.exists and modprobe_overlay is failed
 
