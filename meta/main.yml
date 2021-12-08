@@ -1,5 +1,7 @@
 ---
 galaxy_info:
+  role_name: docker_ce
+  namespace: nmusatti
   author: Nicola Musatti
   description: Install Docker Community Edition
   license: GPLv3

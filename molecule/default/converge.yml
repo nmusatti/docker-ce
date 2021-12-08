@@ -4,4 +4,4 @@
   environment:
     DOCKER_HOST: unix:///docker.sock
   roles:
-    - role: docker-ce
+    - role: nmusatti.docker_ce
