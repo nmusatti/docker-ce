@@ -1,6 +1,8 @@
 Ansible role: docker-ce
 =======================
 
+![test](https://github.com/nmusatti/docker-ce/actions/workflows/test.yml/badge.svg)
+
 An Ansible role to install the official Docker Community Edition. Currently only Red Hat distributions are supported,
 i.e. CentOS 7, CentOS 8 and Fedora.
 
