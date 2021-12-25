@@ -1,0 +1,89 @@
+---
+# docker-ce
+# Copyright Nicola Musatti 2021.
+
+- name: Enable the EPEL repository
+  include_role:
+    name: geerlingguy.repo-epel
+  when: dockerce_platform != 'Fedora'
+
+- name: Remove Red Hat distributed Docker
+  yum:
+    name:
+      - docker
+      - docker-client
+      - docker-client-latest
+      - docker-common
+      - docker-compose
+      - docker-latest
+      - docker-latest-logrotate
+      - docker-logrotate
+      - docker-engine
+    state: absent
+  become: true
+
+- name: "Install the required packages (EL 8)"
+  dnf:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - ca-certificates
+      - container-selinux
+      - device-mapper-persistent-data
+      - gcc
+      - iptables
+      - libcgroup
+      - lvm2
+      - yum-utils
+  become: true
+  when: dockerce_platform == 'EL8'
+
+- name: "Install the required packages (Fedora)"
+  dnf:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - ca-certificates
+      - container-selinux
+      - device-mapper-persistent-data
+      - gcc
+      - iptables
+      - libcgroup
+      - libxcrypt-compat
+      - lvm2
+      - yum-utils
+  become: true
+  when: dockerce_platform == 'Fedora'
+
+- name: "Install the required packages (EL 7)"
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - ca-certificates
+      - device-mapper-persistent-data
+      - gcc
+      - lvm2
+      - yum-utils
+  become: true
+  when: dockerce_platform == 'EL7'
+
+- name: Check if the official Docker yum repository is available
+  stat:
+    path: /etc/yum.repos.d/docker-ce.repo
+  register: docker_repo
+
+- name: Install the official Docker repository
+  command: "yum-config-manager --add-repo https://download.docker.com/linux/{{ dockerce_distribution }}/docker-ce.repo"
+  become: true
+  when: docker_repo.stat.exists is defined and not docker_repo.stat.exists
+
+- name: "Install Docker and dependencies"
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - containerd.io
+      - docker-ce
+      - docker-ce-cli
+  become: true
