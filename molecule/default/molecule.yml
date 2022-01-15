@@ -11,7 +11,6 @@ lint: |
 platforms:
   - name: $TOX_ENVNAME
     image: nmusatti/${TOX_ENVNAME}-pys-systemd
-
     command: /sbin/init
     pre_build_image: true
     privileged: True
