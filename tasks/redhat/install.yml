@@ -32,7 +32,6 @@
       - device-mapper-persistent-data
       - gcc
       - iptables
-      - libcgroup
       - lvm2
       - yum-utils
   become: true
