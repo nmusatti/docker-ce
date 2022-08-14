@@ -3,7 +3,7 @@
 # Copyright Nicola Musatti 2021.
 
 - name: Remove Ubuntu distributed Docker
-  apt:
+  ansible.builtin.apt:
     name:
       - docker
       - docker-engine
@@ -14,7 +14,7 @@
   become: true
 
 - name: "Install the required packages"
-  apt:
+  ansible.builtin.apt:
     name:
       - ca-certificates
       - curl
@@ -23,29 +23,29 @@
   become: true
 
 - name: Check if the official Docker apt repository is available
-  stat:
+  ansible.builtin.stat:
     path: /etc/apt/sources.list.d/docker.list
   register: docker_repo
 
 - name: Install the official Docker GPG key
-  apt_key:
+  ansible.builtin.apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
     keyring: /usr/share/keyrings/docker-archive-keyring.gpg
   when: docker_repo.stat.exists is defined and not docker_repo.stat.exists
 
 - name: Retrieve package architecture
-  command: "dpkg --print-architecture"
+  ansible.builtin.command: "dpkg --print-architecture"
   register: dpkg_architecture
   when: docker_repo.stat.exists is defined and not docker_repo.stat.exists
 
 - name: Retrieve LSB release
-  command: "lsb_release -cs"
+  ansible.builtin.command: "lsb_release -cs"
   register: lsb_release
   when: docker_repo.stat.exists is defined and not docker_repo.stat.exists
 
 - name: Install the official Docker repository
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "deb [arch={{ dpkg_architecture.stdout }} signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
     {{ lsb_release.stdout }} stable"
     filename: docker
@@ -53,7 +53,7 @@
   when: docker_repo.stat.exists is defined and not docker_repo.stat.exists
 
 - name: "Install Docker and dependencies"
-  apt:
+  ansible.builtin.apt:
     name:
       - containerd.io
       - docker-ce

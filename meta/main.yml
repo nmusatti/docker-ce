@@ -5,20 +5,22 @@ galaxy_info:
   author: Nicola Musatti
   description: Install Docker Community Edition
   license: GPLv3
-  min_ansible_version: 2.9
+  min_ansible_version: "2.9"
   platforms:
     - name: EL
       versions:
-        - 8
-        - 7
+        - "9"
+        - "8"
+        - "7"
     - name: Fedora
       versions:
-        - 35
-        - 34
+        - "36"
+        - "35"
     - name: Ubuntu
       versions:
+        - jammy
         - focal
-        - bionic
+        - bionic  
   galaxy_tags:
     - docker
 dependencies: []

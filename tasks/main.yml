@@ -3,7 +3,7 @@
 # Copyright Nicola Musatti 2020 - 2021.
 
 - name: Install Docker CE (RedHat)
-  include_tasks: "redhat/install.yml"
+  ansible.builtin.include_tasks: "redhat/install.yml"
   when: ansible_os_family == "RedHat"
 
 - name: Install Docker CE (Ubuntu)
@@ -11,25 +11,25 @@
   when: ansible_distribution == "Ubuntu"
 
 - name: Create the docker group
-  group:
+  ansible.builtin.group:
     name: docker
     state: present
   become: true
 
 - name: Check if the containerd override file exists
-  stat:
+  ansible.builtin.stat:
     path: /etc/systemd/system/containerd.service.d/override.conf
   register: containerd_path
   when: dockerce_platform == 'EL8'
 
 - name: Check if the overlay module is available
-  command: /sbin/modprobe overlay
+  ansible.builtin.command: /sbin/modprobe overlay
   ignore_errors: true
   register: modprobe_overlay
   when: dockerce_platform == 'EL8' and not containerd_path.stat.exists
 
 - name: Create containerd service directory
-  file:
+  ansible.builtin.file:
     path: /etc/systemd/system/containerd.service.d
     state: directory
     mode: 0755
@@ -37,7 +37,7 @@
   when: dockerce_platform == 'EL8' and not containerd_path.stat.exists and modprobe_overlay is failed
 
 - name: Disable overlay dependency
-  copy:
+  ansible.builtin.copy:
     content: |
       [Service]
       ExecStartPre=
@@ -47,7 +47,7 @@
   when: dockerce_platform == 'EL8' and not containerd_path.stat.exists and modprobe_overlay is failed
 
 - name: Start the docker service
-  service:
+  ansible.builtin.service:
     name: docker
     enabled: true
     state: started
@@ -56,7 +56,7 @@
   register: docker_start
 
 - name: Reload the docker service
-  service:
+  ansible.builtin.service:
     name: docker
     enabled: true
     state: reloaded
@@ -64,7 +64,7 @@
   when: docker_start is failed
 
 - name: Install docker-compose
-  get_url:
+  ansible.builtin.get_url:
     url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
     dest: /usr/local/bin/docker-compose
     mode: 0755

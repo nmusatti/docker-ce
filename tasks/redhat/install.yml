@@ -3,12 +3,12 @@
 # Copyright Nicola Musatti 2021.
 
 - name: Enable the EPEL repository
-  include_role:
+  ansible.builtin.include_role:
     name: geerlingguy.repo-epel
   when: dockerce_platform != 'Fedora'
 
 - name: Remove Red Hat distributed Docker
-  yum:
+  ansible.builtin.yum:
     name:
       - docker
       - docker-client
@@ -22,8 +22,8 @@
     state: absent
   become: true
 
-- name: "Install the required packages (EL 8)"
-  dnf:
+- name: "Install the required packages (EL 9, EL 8)"
+  ansible.builtin.dnf:
     name: "{{ packages }}"
   vars:
     packages:
@@ -36,10 +36,10 @@
       - lvm2
       - yum-utils
   become: true
-  when: dockerce_platform == 'EL8'
+  when: dockerce_platform in ( 'EL9', 'EL8' )
 
 - name: "Install the required packages (Fedora)"
-  dnf:
+  ansible.builtin.dnf:
     name: "{{ packages }}"
   vars:
     packages:
@@ -56,7 +56,7 @@
   when: dockerce_platform == 'Fedora'
 
 - name: "Install the required packages (EL 7)"
-  yum:
+  ansible.builtin.yum:
     name: "{{ packages }}"
   vars:
     packages:
@@ -69,17 +69,17 @@
   when: dockerce_platform == 'EL7'
 
 - name: Check if the official Docker yum repository is available
-  stat:
+  ansible.builtin.stat:
     path: /etc/yum.repos.d/docker-ce.repo
   register: docker_repo
 
 - name: Install the official Docker repository
-  command: "yum-config-manager --add-repo https://download.docker.com/linux/{{ dockerce_distribution }}/docker-ce.repo"
+  ansible.builtin.command: "yum-config-manager --add-repo https://download.docker.com/linux/{{ dockerce_distribution }}/docker-ce.repo"
   become: true
   when: docker_repo.stat.exists is defined and not docker_repo.stat.exists
 
 - name: "Install Docker and dependencies"
-  yum:
+  ansible.builtin.yum:
     name: "{{ packages }}"
   vars:
     packages:
