@@ -1,6 +1,6 @@
 ---
 # docker-ce
-# Copyright Nicola Musatti 2021.
+# Copyright Nicola Musatti 2021 - 2022.
 
 - name: Enable the EPEL repository
   ansible.builtin.include_role:
@@ -35,7 +35,7 @@
       - lvm2
       - yum-utils
   become: true
-  when: dockerce_platform in ( 'EL9', 'EL8' )
+  when: dockerce_platform in ('EL9', 'EL8')
 
 - name: "Install the required packages (Fedora)"
   ansible.builtin.dnf:

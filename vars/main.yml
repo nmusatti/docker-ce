@@ -1,5 +1,5 @@
 ---
-dockerce_platform: "{{ ( ansible_os_family == 'RedHat' and ansible_distribution != 'Fedora' ) |
+dockerce_platform: "{{ (ansible_os_family == 'RedHat' and ansible_distribution != 'Fedora') |
 ternary('EL' + ansible_distribution_major_version, ansible_distribution) }}"
-dockerce_redhat_distribution: "{{ ( ansible_distribution == 'Fedora' ) | ternary('fedora', 'centos') }}"
-dockerce_distribution: "{{ ( ansible_distribution == 'Ubuntu' ) | ternary('ubuntu', dockerce_redhat_distribution) }}"
+dockerce_redhat_distribution: "{{ (ansible_distribution == 'Fedora') | ternary('fedora', 'centos') }}"
+dockerce_distribution: "{{ (ansible_distribution == 'Ubuntu') | ternary('ubuntu', dockerce_redhat_distribution) }}"
