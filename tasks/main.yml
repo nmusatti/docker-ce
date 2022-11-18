@@ -7,7 +7,7 @@
   when: ansible_os_family == "RedHat"
 
 - name: Install Docker CE (Ubuntu)
-  include_tasks: "ubuntu/install.yml"
+  ansible.builtin.include_tasks: "ubuntu/install.yml"
   when: ansible_distribution == "Ubuntu"
 
 - name: Create the docker group
