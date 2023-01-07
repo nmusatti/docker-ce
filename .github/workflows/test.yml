@@ -33,5 +33,7 @@ jobs:
       - run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install tox
-      - run: |
+      - env:
+          ANSIBLE_REMOTE_TMP: /tmp/ansible
+        run: |
           tox -e ${{ matrix.platform }} -- test

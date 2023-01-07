@@ -3,6 +3,5 @@
   hosts: all
   environment:
     DOCKER_HOST: unix:///docker.sock
-    ANSIBLE_REMOTE_TMP: /tmp/ansible
   roles:
     - role: nmusatti.docker_ce
