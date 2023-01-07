@@ -30,6 +30,8 @@ jobs:
         with:
           packages: iptables
           version: 1.0
+      - uses: docker-practice/actions-setup-docker@master
+        timeout-minutes: 12
       - run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install tox
