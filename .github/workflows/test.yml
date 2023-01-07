@@ -8,23 +8,27 @@ name: test
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         platform:
-          # - rockylinux9
+          - rockylinux9
           - rockylinux8
-          # - centos7
-          # - centos-stream9
+          - centos7
+          - centos-stream9
           - centos-stream8
-          # - fedora36
-          # - fedora35
+          - fedora37
+          - fedora36
+          - fedora35
           - ubuntu2204
-          # - ubuntu2004
-          # - ubuntu1804
+          - ubuntu2004
+          - ubuntu1804
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+      - run: |
+          apt update
+          apt install iptables
       - run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install tox
