@@ -5,11 +5,11 @@ Ansible role: docker-ce
 
 An Ansible role to install the official Docker Community Edition engine.
 Supported distributions are the currently maintained releases of the Red Hat
-family and derivatives, and Ubuntu.
+family and derivatives, and Ubuntu LTS.
 
-Currently tests fail on my Rocky Linux 8 developemnt machine for all distros except
-Rocky Linux 8, CentOS Stream 8 and Ubuntu 22.04 LTS. GitHub tests are therefore
-disabled for all distros except Rocky Linux 8 until I manage to solve this problem. 
+Currently tests succeed on my Rocky Linux 8 developemnt machine for all distros 
+provided I enable iptables in the running kernel. I'm currently trying to
+address this problem within GitHub Actions. 
 
 Requirements
 ------------
