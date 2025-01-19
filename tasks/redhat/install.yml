@@ -2,6 +2,15 @@
 # docker-ce
 # Copyright Nicola Musatti 2021 - 2022.
 
+- name: "Install GNUpg (EL 10)"
+  ansible.builtin.dnf:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - gnupg2
+  become: true
+  when: dockerce_platform == 'EL10'
+
 - name: Enable the EPEL repository
   ansible.builtin.include_role:
     name: geerlingguy.repo-epel
@@ -19,8 +28,25 @@
       - docker-latest-logrotate
       - docker-logrotate
       - docker-engine
+      - runc
     state: absent
   become: true
+  when: dockerce_platform != 'Fedora'
+
+- name: "Install the required packages (EL 10)"
+  ansible.builtin.dnf:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - ca-certificates
+      - container-selinux
+      - device-mapper-persistent-data
+      - gcc
+      - iptables
+      - lvm2
+      - yum-utils
+  become: true
+  when: dockerce_platform == 'EL10'
 
 - name: "Install the required packages (EL 9, EL 8)"
   ansible.builtin.dnf:
@@ -54,19 +80,6 @@
   become: true
   when: dockerce_platform == 'Fedora'
 
-- name: "Install the required packages (EL 7)"
-  ansible.builtin.yum:
-    name: "{{ packages }}"
-  vars:
-    packages:
-      - ca-certificates
-      - device-mapper-persistent-data
-      - gcc
-      - lvm2
-      - yum-utils
-  become: true
-  when: dockerce_platform == 'EL7'
-
 - name: Check if the official Docker yum repository is available
   ansible.builtin.stat:
     path: /etc/yum.repos.d/docker-ce.repo
@@ -85,4 +98,6 @@
       - containerd.io
       - docker-ce
       - docker-ce-cli
+      - docker-buildx-plugin
+      - docker-compose-plugin
   become: true

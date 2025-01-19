@@ -5,3 +5,5 @@
     DOCKER_HOST: unix:///docker.sock
   roles:
     - role: nmusatti.docker_ce
+  vars:
+    start_service: False

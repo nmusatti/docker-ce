@@ -10,12 +10,15 @@ lint: |
   flake8
 platforms:
   - name: $TOX_ENVNAME
-    image: nmusatti/${TOX_ENVNAME}-pys-systemd
-    command: /sbin/init
+    # image: nmusatti/${TOX_ENVNAME}-pys-systemd
+    image: nmusatti/${TOX_ENVNAME}-pys
+    # command: /sbin/init
     pre_build_image: true
-    privileged: True
+    privileged: true
+    # cgroupns_mode: host
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      # - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /var/run/docker.sock:/var/run/docker.sock
 provisioner:
   name: ansible
 verifier:

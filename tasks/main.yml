@@ -54,6 +54,7 @@
   become: true
   ignore_errors: true
   register: docker_start
+  when: start_service
 
 - name: Reload the docker service
   ansible.builtin.service:
@@ -61,11 +62,4 @@
     enabled: true
     state: reloaded
   become: true
-  when: docker_start is failed
-
-- name: Install docker-compose
-  ansible.builtin.get_url:
-    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
-    dest: /usr/local/bin/docker-compose
-    mode: 0755
-  become: true
+  when: start_service and docker_start is failed
