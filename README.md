@@ -5,11 +5,9 @@ Ansible role: docker-ce
 
 An Ansible role to install the official Docker Community Edition engine.
 Supported distributions are the currently maintained releases of the Red Hat
-family and derivatives, and Ubuntu LTS.
-
-Currently tests succeed on my Rocky Linux 8 developemnt machine for all distros 
-provided I enable iptables in the running kernel. I'm currently trying to
-address this problem within GitHub Actions. 
+family and derivatives, and Ubuntu LTS. At this time tests are run on Rocky Linux 9, 
+CentOS Stream 10, CentOS Stream 9, Fedora 41, Fedora 40, Fedora 39,
+Ubuntu 24.04, Ubuntu 22.04 and Ubuntu 20.04.
 
 Requirements
 ------------
@@ -21,9 +19,9 @@ Role Variables
 
 The variables that control the role behaviour are listed below with their respective defaults:
 
-    docker_compose_version: v2.2.2
+    start_service: True
 
-The docker-compose release to be installed, as indicated on the [Releases page](https://github.com/docker/compose/releases) of the [docker-compose GitHub project](https://github.com/docker/compose).
+Whether the docker system service should be started after installation.
 
 Dependencies
 ------------
@@ -37,7 +35,7 @@ Example Playbook
       roles:
          - role: nmusatti.docker_ce
 
-Note the underscore in the name. Ansible Galaxy did not accept my submission otherwise.
+Note the underscore in the name.
 
 License
 -------
