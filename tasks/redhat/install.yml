@@ -17,7 +17,7 @@
   when: dockerce_platform != 'Fedora'
 
 - name: Remove Red Hat distributed Docker
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name:
       - docker
       - docker-client
@@ -91,7 +91,7 @@
   when: docker_repo.stat.exists is defined and not docker_repo.stat.exists
 
 - name: "Install Docker and dependencies"
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: "{{ packages }}"
   vars:
     packages:
