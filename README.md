@@ -53,6 +53,13 @@ The tests use Molecule with rootless Podman. Test images are built from
 
 The test containers can't run the Docker daemon, so the tests check the installation only.
 
+Releasing
+---------
+
+Pushing a tag `vX.Y.Z` on `master` runs the tests and, if they all pass, imports the role into
+Galaxy. The import needs a Galaxy API token (https://galaxy.ansible.com/ui/token) stored as the
+repository secret `GALAXY_API_KEY`.
+
 License
 -------
 

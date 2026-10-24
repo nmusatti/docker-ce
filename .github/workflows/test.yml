@@ -65,3 +65,21 @@ jobs:
         run: scripts/molecule-matrix -d "$DISTRO"
       - if: failure()
         run: cat .cache/molecule-logs/*.log
+
+  # Pushing a tag v* publishes the role on Galaxy once all the tests pass.
+  # Galaxy takes the version from the most recent tag.
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [lint, molecule]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - run: pip install -r requirements-dev.txt
+      - env:
+          GALAXY_API_KEY: ${{ secrets.GALAXY_API_KEY }}
+        run: ansible-galaxy role import --token "$GALAXY_API_KEY" --role-name docker_ce nmusatti docker-ce
