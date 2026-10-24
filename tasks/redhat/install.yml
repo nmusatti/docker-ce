@@ -1,6 +1,6 @@
 ---
 # docker-ce
-# Copyright Nicola Musatti 2021 - 2022.
+# Copyright Nicola Musatti 2021 - 2026.
 
 - name: "Install GNUpg (EL 10)"
   ansible.builtin.dnf:
@@ -10,11 +10,6 @@
       - gnupg2
   become: true
   when: dockerce_platform == 'EL10'
-
-- name: Enable the EPEL repository
-  ansible.builtin.include_role:
-    name: geerlingguy.repo-epel
-  when: dockerce_platform != 'Fedora'
 
 - name: Remove Red Hat distributed Docker
   ansible.builtin.dnf:
@@ -80,15 +75,11 @@
   become: true
   when: dockerce_platform == 'Fedora'
 
-- name: Check if the official Docker yum repository is available
-  ansible.builtin.stat:
-    path: /etc/yum.repos.d/docker-ce.repo
-  register: docker_repo
-
 - name: Install the official Docker repository
-  ansible.builtin.command: "yum-config-manager --add-repo https://download.docker.com/linux/{{ dockerce_distribution }}/docker-ce.repo"
+  ansible.builtin.command:
+    cmd: "yum-config-manager --add-repo https://download.docker.com/linux/{{ dockerce_distribution }}/docker-ce.repo"
+    creates: /etc/yum.repos.d/docker-ce.repo
   become: true
-  when: docker_repo.stat.exists is defined and not docker_repo.stat.exists
 
 - name: "Install Docker and dependencies"
   ansible.builtin.dnf:

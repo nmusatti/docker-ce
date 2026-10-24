@@ -5,9 +5,13 @@ Ansible role: docker-ce
 
 An Ansible role to install the official Docker Community Edition engine.
 Supported distributions are the currently maintained releases of the Red Hat
-family and derivatives, and Ubuntu LTS. At this time tests are run on Rocky Linux 10, Rocky Linux 9, 
-CentOS Stream 10, CentOS Stream 9, Fedora 43, Fedora 42, Fedora 41,
-Ubuntu 24.04 and Ubuntu 22.04.
+family and derivatives, and Ubuntu LTS. At this time tests are run on Rocky Linux 10, Rocky Linux 9,
+CentOS Stream 10, CentOS Stream 9, Fedora 44, Fedora 43, Ubuntu 26.04, Ubuntu 24.04 and
+Ubuntu 22.04.
+
+On Ubuntu the Docker repository is configured in `/etc/apt/sources.list.d/docker.sources`.
+The `docker.list` file and the key in `/usr/share/keyrings` created by versions up to 1.3
+are removed.
 
 Requirements
 ------------
@@ -36,6 +40,18 @@ Example Playbook
          - role: nmusatti.docker_ce
 
 Note the underscore in the name.
+
+Testing
+-------
+
+The tests use Molecule with rootless Podman. Test images are built from
+`molecule/Dockerfile.j2`, and the distributions are listed in `molecule/distros`.
+
+    python3 -m venv .venv
+    .venv/bin/pip install -r requirements-dev.txt
+    PATH=$PWD/.venv/bin:$PATH scripts/molecule-matrix -d ubuntu2604   # or no -d for all
+
+The test containers can't run the Docker daemon, so the tests check the installation only.
 
 License
 -------

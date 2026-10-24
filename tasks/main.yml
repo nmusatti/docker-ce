@@ -1,6 +1,6 @@
 ---
 # docker-ce
-# Copyright Nicola Musatti 2020 - 2021.
+# Copyright Nicola Musatti 2020 - 2026.
 
 - name: Install Docker CE (RedHat)
   ansible.builtin.include_tasks: "redhat/install.yml"
@@ -15,36 +15,6 @@
     name: docker
     state: present
   become: true
-
-- name: Check if the containerd override file exists
-  ansible.builtin.stat:
-    path: /etc/systemd/system/containerd.service.d/override.conf
-  register: containerd_path
-  when: dockerce_platform == 'EL8'
-
-- name: Check if the overlay module is available
-  ansible.builtin.command: /sbin/modprobe overlay
-  ignore_errors: true
-  register: modprobe_overlay
-  when: dockerce_platform == 'EL8' and not containerd_path.stat.exists
-
-- name: Create containerd service directory
-  ansible.builtin.file:
-    path: /etc/systemd/system/containerd.service.d
-    state: directory
-    mode: 0755
-  become: true
-  when: dockerce_platform == 'EL8' and not containerd_path.stat.exists and modprobe_overlay is failed
-
-- name: Disable overlay dependency
-  ansible.builtin.copy:
-    content: |
-      [Service]
-      ExecStartPre=
-    dest: /etc/systemd/system/containerd.service.d/override.conf
-    mode: 0644
-  become: true
-  when: dockerce_platform == 'EL8' and not containerd_path.stat.exists and modprobe_overlay is failed
 
 - name: Start the docker service
   ansible.builtin.service:
