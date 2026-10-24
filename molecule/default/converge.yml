@@ -1,9 +1,8 @@
 ---
 - name: Converge
   hosts: all
-  environment:
-    DOCKER_HOST: unix:///docker.sock
   roles:
     - role: nmusatti.docker_ce
   vars:
-    start_service: False
+    # The test containers can't run the Docker daemon
+    start_service: false

@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# docker-ce
+# Copyright Nicola Musatti 2026.
+
+# molecule-matrix - run the Molecule tests on several distributions.
+#
+# Usage: scripts/molecule-matrix [-d distro]... [-j jobs] [-c command]
+#
+#   -d  distribution to test (default: all in molecule/distros)
+#   -j  number of runs in parallel (default: 2)
+#   -c  Molecule command (default: test)
+#
+# Ansible's home is .cache/ansible, so the collections needed by the tests don't
+# end up in ~/.ansible. Each run gets its own ephemeral directory, so runs don't
+# interfere with each other. Logs go to .cache/molecule-logs/<distro>.log and a
+# summary is printed at the end. Exits with a non-zero status if any run failed.
+
+set -euo pipefail
+
+root=$(cd "$(dirname "$0")/.." && pwd)
+logs="$root/.cache/molecule-logs"
+
+distros=()
+jobs=2
+command=test
+
+while getopts "d:j:c:h" opt; do
+    case $opt in
+        d) distros+=("$OPTARG") ;;
+        j) jobs=$OPTARG ;;
+        c) command=$OPTARG ;;
+        *) sed -n '6,17p' "$0" | sed 's/^# \{0,1\}//'; exit 2 ;;
+    esac
+done
+
+if [[ ${#distros[@]} -eq 0 ]]; then
+    mapfile -t distros < <(grep -v '^\s*\(#\|$\)' "$root/molecule/distros")
+fi
+
+mkdir -p "$logs"
+
+export ANSIBLE_HOME="$root/.cache/ansible"
+ansible-galaxy collection install -r "$root/molecule/requirements.yml" -p "$ANSIBLE_HOME/collections" >/dev/null
+rm -f "$logs/summary.txt"
+
+run_one() {
+    local distro=$1
+    local log="$logs/$distro.log"
+    local start=$SECONDS
+    if MOLECULE_DISTRO=$distro \
+       MOLECULE_EPHEMERAL_DIRECTORY="$root/.cache/molecule-tmp/$distro" \
+       NO_COLOR=1 PY_COLORS=0 ANSIBLE_FORCE_COLOR=0 \
+       molecule "$command" </dev/null >"$log" 2>&1; then
+        printf '%-6s %-16s %5ss\n' PASS "$distro" $((SECONDS - start))
+    else
+        printf '%-6s %-16s %5ss  %s\n' FAIL "$distro" $((SECONDS - start)) "$log"
+    fi
+}
+export -f run_one
+export root logs command
+
+cd "$root"
+printf '%s\n' "${distros[@]}" | xargs -P "$jobs" -L 1 bash -c 'run_one "$0"' | tee "$logs/summary.txt"
+
+! grep -q '^FAIL' "$logs/summary.txt"

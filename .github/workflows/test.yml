@@ -1,31 +1,67 @@
+---
+# docker-ce
+# Copyright Nicola Musatti 2020 - 2026.
+
+name: test
+
 on:
   push:
   pull_request:
   schedule:
-  - cron: "0 6 1 * *"
+    - cron: "0 6 1 * *"
+  workflow_dispatch:
 
-name: test
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test:
+  matrix:
+    name: Build the test matrix
+    runs-on: ubuntu-24.04
+    outputs:
+      distros: ${{ steps.matrix.outputs.distros }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: matrix
+        run: |
+          echo "distros=$(grep -v '^\s*\(#\|$\)' molecule/distros | jq -R . | jq -sc .)" >> "$GITHUB_OUTPUT"
+
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - run: pip install -r requirements-dev.txt
+      - run: yamllint .
+      - run: ansible-lint
+
+  molecule:
+    name: molecule (${{ matrix.distro }})
+    needs: matrix
     runs-on: ubuntu-24.04
     strategy:
+      fail-fast: false
       matrix:
-        platform:
-          - rockylinux10
-          - rockylinux9
-          - centos-stream10
-          - centos-stream9
-          - fedora43
-          - fedora42
-          - fedora41
-          - ubuntu2404
-          - ubuntu2204
+        distro: ${{ fromJSON(needs.matrix.outputs.distros) }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
-      - run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install tox
-      - run: |
-          tox -e ${{ matrix.platform }} -- test
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - run: pip install -r requirements-dev.txt
+      # The runner's AppArmor profile for unix_chkpwd also applies inside the
+      # containers. It lacks dac_override, which is needed to read the RH
+      # family's mode 0000 /etc/shadow, and that makes sudo fail on EL9.
+      - run: sudo apparmor_parser -R /etc/apparmor.d/unix-chkpwd
+      - env:
+          DISTRO: ${{ matrix.distro }}
+        run: scripts/molecule-matrix -d "$DISTRO"
+      - if: failure()
+        run: cat .cache/molecule-logs/*.log

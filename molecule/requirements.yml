@@ -1,0 +1,4 @@
+---
+# Collections needed to run the tests; installed by scripts/molecule-matrix.
+collections:
+  - name: containers.podman
